@@ -13,7 +13,9 @@ import sys
 import glob
 from matplotlib.widgets import TextBox, Button, RadioButtons
 from matplotlib.patches import Circle
+import time
 
+start = time.time()
 
 # current volume number
 volume_number = sys.argv[1]
@@ -172,13 +174,18 @@ class IndexTracker(object):
 
             f.write('VOLUME ' + str(volume_number))
             f.write('\n')
-            f.write(case_but.value_selected)
-            f.write('\n')
+            global start
+            end = time.time()
+            f.write('Total time:\n')
+            f.write(str(end - start))
+            f.write(' seconds\n')
             s = 'Points selected:\n'
             for x in self.points:
                 s += '[' + str(int(x[0])) + ',' + str(int(x[1])) + ',' + str(int(x[2])) + ']\n'
             f.write(s)
-            s = 'Questionnaire answers:\n'
+            f.write('Exam feedback:\n')
+            f.write(case_but.value_selected)
+            s = '\nQuestionnaire answers:\n'
             s += q1a_but.value_selected + ',' + q2a_but.value_selected + ',' + q3a_but.value_selected + ',' + q4a_but.value_selected + ',' + q5a_but.value_selected
             f.write(s)
             f.close()
