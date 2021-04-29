@@ -3,9 +3,6 @@
 # Usage - if numpy file volume_i.npy exists:
 # python scroller.py i
 
-# Mass Usage - if numpy files volume_0.npy...volume_N.npy exist:
-# for i in {0..N};  do python scroller.py $i; done;
-
 
 from __future__ import print_function
 
