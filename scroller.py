@@ -17,7 +17,6 @@ from matplotlib.patches import Circle
 
 # current volume number
 volume_number = sys.argv[1]
-print(volume_number)
 
 UNDO = False
 DONE = False
