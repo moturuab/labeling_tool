@@ -6,11 +6,6 @@
 # Mass Usage - if numpy files volume_0.npy...volume_N.npy exist:
 # for i in {0..N};  do python scroller.py $i; done;
 
-'''
-Abhi: for i in {0..1169};  do python scroller.py $i; done;
-Alex: for i in {1170..2339};  do python scroller.py $i; done;
-Vin:  for i in {2340..3512};  do python scroller.py $i; done;
-'''
 
 from __future__ import print_function
 
@@ -19,72 +14,130 @@ import matplotlib.pyplot as plt
 from skimage import exposure
 import sys
 import glob
-from matplotlib.widgets import Button
-from matplotlib.widgets import CheckButtons
+from matplotlib.widgets import TextBox, Button, RadioButtons
+from matplotlib.patches import Circle
 
 
 # current volume number
 volume_number = sys.argv[1]
 print(volume_number)
 
+UNDO = False
+DONE = False
+FINISH = False
+
+fig = plt.figure(figsize=(9, 7))
+ax = plt.subplot2grid((1,1), (0,0),)
+
+coords = plt.axes([0.09, 0.25, 0.2, 0.65])
+coords_box = Button(coords, 'Points selected:\n', color='white', hovercolor='white')
+
+undo = plt.axes([0.09, 0.09, 0.2, 0.1])
+undo_but = Button(undo, 'UNDO', color='white', hovercolor='red')
+
+case = plt.axes([0.72, 0.44, 0.2, 0.2])
+case_but = RadioButtons(case, ('NO FOLLOW-UP', 'FOLLOW-UP', 'BIOPSY'), (False,))
+
+done = plt.axes([0.72, 0.25, 0.2, 0.1])
+done_but = Button(done, 'DONE', color='white', hovercolor='green')
+done.set_visible(False)
+
+q1 = plt.axes([0.15, 0.95, 0.7, 0.03])
+q1_but = Button(q1, 'Q1. How mentally demanding was the task?', color='white', hovercolor='white')
+q1.set_visible(False)
+
+q1a = plt.axes([0.15, 0.8, 0.7, 0.15])
+q1a_but = RadioButtons(q1a, ['1', '2', '3', '4', '5'], (False,))
+q1a.set_visible(False)
+
+q2 = plt.axes([0.15, 0.77, 0.7, 0.03])
+q2_but = Button(q2, 'Q2. How hurried or rushed was the pace of the task?', color='white', hovercolor='white')
+q2.set_visible(False)
+
+q2a = plt.axes([0.15, 0.62, 0.7, 0.15])
+q2a_but = RadioButtons(q2a, ('1', '2', '3', '4', '5'), (False,))
+q2a.set_visible(False)
+
+q3 = plt.axes([0.15, 0.59, 0.7, 0.03])
+q3_but = Button(q3, 'Q3. How successful were you in accomplishing what you were asked to do?', color='white', hovercolor='white')
+q3.set_visible(False)
+
+q3a = plt.axes([0.15, 0.44, 0.7, 0.15])
+q3a_but = RadioButtons(q3a, ('1', '2', '3', '4', '5'), (False,))
+q3a.set_visible(False)
+
+q4 = plt.axes([0.15, 0.41, 0.7, 0.03])
+q4_but = Button(q4, 'Q4. How hard did you have to work to accomplish your level of performance?', color='white', hovercolor='white')
+q4.set_visible(False)
+
+q4a = plt.axes([0.15, 0.26, 0.7, 0.15])
+q4a_but = RadioButtons(q4a, ('1', '2', '3', '4', '5'), (False,))
+q4a.set_visible(False)
+
+q5 = plt.axes([0.15, 0.23, 0.7, 0.03])
+q5_but = Button(q5, 'Q5. How insecure, discouraged, irritated, stressed, and annoyed were you?', color='white', hovercolor='white')
+q5.set_visible(False)
+
+q5a = plt.axes([0.15, 0.08, 0.7, 0.15])
+q5a_but = RadioButtons(q5a, ('1', '2', '3', '4', '5'), (False,))
+q5a.set_visible(False)
+
+finish = plt.axes([0.3, 0.02, 0.4, 0.05])
+finish_but = Button(finish, 'FINISH', color='white', hovercolor='green')
+finish.set_visible(False)
+
 class Labels():
     def __init__(self, volume_n):
         self.volume_n = volume_n
-        self.up = False
-        self.normal = False
-        self.cancer = False
-        self.brain_anomaly = False
-        self.other_anomaly = False
-        self.faulty = False
 
-    def toggle_up(self, _):
-        self.up = not self.up
+    def case(self, label):
+        done.set_visible(True)
+        fig.canvas.draw_idle()
 
-    def toggle_normal(self, _):
-        # print(a)
-        self.normal = not self.normal
-    def toggle_cancer(self, _):
-        self.cancer = not self.cancer
-    def toggle_ba(self, _):
-        self.brain_anomaly = not self.brain_anomaly
-    def toggle_oa(self, _):
-        self.other_anomaly = not self.other_anomaly
-    def toggle_faulty(self, _):
-        self.faulty = not self.faulty
+    def done(self, label):
+        coords.set_visible(False)
+        undo.set_visible(False)
+        case.set_visible(False)
+        done.set_visible(False)
+        ax.set_visible(False)
+        q1.set_visible(True)
+        q1a.set_visible(True)
+        q2.set_visible(True)
+        q2a.set_visible(True)
+        q3.set_visible(True)
+        q3a.set_visible(True)
+        q4.set_visible(True)
+        q4a.set_visible(True)
+        q5.set_visible(True)
+        q5a.set_visible(True)
+        finish.set_visible(True)
+        global DONE
+        DONE = True
+        fig.canvas.draw_idle()
 
-    def write_file(self, _):
-        f = open('manual_volume_labels.txt', 'a+')
+    def finish(self, label):
+        global FINISH
+        FINISH = True
+        fig.canvas.draw_idle()
 
-        f.write(str(volume_number))
-        if self.up:
-            f.write(",up")
-        if self.normal:
-            f.write(",normal")
-        if self.cancer:
-            f.write(",cancer")
-        if self.brain_anomaly:
-            f.write(",brain_anomaly")
-        if self.other_anomaly:
-            f.write(",other_anomaly")
-        if self.faulty:
-            f.write(",faulty")
-
-        f.write("\n")
-
-        f.close()
-        sys.exit()
-
-
+    def undo(self, label):
+        global UNDO
+        UNDO = True
+        fig.canvas.draw_idle()
 
 
 # handle scrolling through volume
 class IndexTracker(object):
     def __init__(self, ax, X, n):
         self.ax = ax
-        ax.set_title('scrolling through VOLUME {}'.format(n))
+        ax.set_title('scrolling through VOLUME {}\n'.format(n))
         self.X = X
         rows, cols, self.slices = X.shape
         self.ind = 0
+        self.points = []
+        self.circles = []
+        self.press = False
+        self.move = False
 
         self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
         self.update()
@@ -97,70 +150,93 @@ class IndexTracker(object):
         self.update()
 
     def update(self):
-        self.im.set_data(self.X[:, :, self.ind])
-        ax.set_ylabel('slice %s' % self.ind)
-        self.im.axes.figure.canvas.draw()
+        if not DONE:
+            self.im.set_data(self.X[:, :, self.ind])
+            for (point, circ) in zip(self.points, self.circles):
+                if self.ind != point[2]:
+                    circ.set_visible(False)
+                else:
+                    circ.set_visible(True)
+            ax.set_ylabel('slice %s' % self.ind)
+            self.im.axes.figure.canvas.draw()
+
+    def onclick(self, click):
+        global UNDO
+        if UNDO:
+            self.circles[-1].set_visible(False)
+            del self.points[-1]
+            del self.circles[-1]
+            UNDO = False
+            self.im.axes.figure.canvas.draw()
+
+        global DONE
+        global FINISH
+        if DONE and FINISH and q1a_but.value_selected is not None and q2a_but.value_selected is not None and q3a_but.value_selected is not None and q4a_but.value_selected is not None and q5a_but.value_selected is not None:
+            f = open('labels_' + str(volume_number) + '.txt', 'w')
+
+            f.write('VOLUME ' + str(volume_number))
+            f.write('\n')
+            f.write(case_but.value_selected)
+            f.write('\n')
+            s = 'Points selected:\n'
+            for x in self.points:
+                s += '[' + str(int(x[0])) + ',' + str(int(x[1])) + ',' + str(int(x[2])) + ']\n'
+            f.write(s)
+            s = 'Questionnaire answers:\n'
+            s += q1a_but.value_selected + ',' + q2a_but.value_selected + ',' + q3a_but.value_selected + ',' + q4a_but.value_selected + ',' + q5a_but.value_selected
+            f.write(s)
+            f.close()
+            sys.exit()
+
+        if self.press and not self.move:
+            self.point = (click.xdata, click.ydata)
+            if self.point != (None, None) and int(self.point[0]) > 1 and int(self.point[1]) > 1:
+                self.points.append([self.point[0], self.point[1], self.ind])
+                circ = Circle((int(self.point[0]), int(self.point[1]), self.ind), 20, fill=False, edgecolor='red', lw=2)
+                self.circles.append(circ)
+                self.ax.add_patch(circ)
+                s = 'Points selected:\n'
+                for x in self.points:
+                    s += '[' + str(int(x[0])) + ',' + str(int(x[1])) + ',' + str(int(x[2])) + ']\n'
+                coords_box.label.set_text(s)
+                self.update()
+            elif self.point != (None, None):
+                s = 'Points selected:\n'
+                for x in self.points:
+                    s += '[' + str(int(x[0])) + ',' + str(int(x[1])) + ',' + str(int(x[2])) + ']\n'
+                coords_box.label.set_text(s)
+                self.update()
+            return self.point
+
+    # source: https://stackoverflow.com/questions/48446351/distinguish-button-press-event-from-drag-and-zoom-clicks-in-matplotlib
+    def onpress(self, event):
+        self.press = True
+
+    def onmove(self, event):
+        if self.press:
+            self.move = True
+
+    def onrelease(self, event):
+        if self.press and not self.move:
+            self.onclick(event)
+        self.press=False; self.move=False
 
 
-# handle selecting volume category
-
-# five buttons to label volume as belonging to five different categories
-def on_click(event):
-    pass
-
-# checkbox to decide whether patient is looking up or to the front
-def checkbox(label):
-    # global up
-    label = not(label)
-
-
-# # append category and corresponding volume number to file
-# def append_to_file(text):
-#     f.write("{}\n".format(text))
-
-
-
-# plot everything
-fig = plt.figure(figsize=(8.5,5.5))
-ax = plt.subplot2grid((1,1), (0,0),)
-
-X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
+#X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
+X = np.random.randn(1024, 256, 64)
 
 label = Labels(volume_number)
-
-rax = plt.axes([0.05, 0.4, 0.1, 0.2])
-up_check = CheckButtons(rax, ('UP',), (False,))
-up_check.on_clicked(label.toggle_up)
-
-rax = plt.axes([0.05, 0.2, 0.1, 0.2])
-next = Button(rax, "NEXT", color='white', hovercolor='green')
-next.on_clicked(label.write_file)
-
-
 tracker = IndexTracker(ax, X, volume_number)
 
 fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
-plt.connect('button_press_event', on_click)
+fig.canvas.mpl_connect('button_press_event', tracker.onclick)
+fig.canvas.mpl_connect('button_press_event', tracker.onpress)
+fig.canvas.mpl_connect('button_release_event', tracker.onrelease)
+fig.canvas.mpl_connect('motion_notify_event', tracker.onmove)
 
-axcut = plt.axes([0.83, 0.75, 0.15, 0.1])
-n_cut = CheckButtons(axcut, ('NORMAL',), (False,))#, color='white', hovercolor='green')
-n_cut.on_clicked(label.toggle_normal)
-
-axcut = plt.axes([0.83, 0.6, 0.15, 0.1])
-c_cut = CheckButtons(axcut, ('CANCER',), (False,))#Button(axcut, 'CANCER', color='white', hovercolor='yellow')
-c_cut.on_clicked(label.toggle_cancer)
-
-axcut = plt.axes([0.83, 0.45, 0.15, 0.1])
-ba_cut = CheckButtons(axcut, ('BRAIN ANOMALY',), (False,))#Button(axcut, 'BRAIN ANOMALY', color='white', hovercolor='orange')
-ba_cut.on_clicked(label.toggle_ba)
-
-axcut = plt.axes([0.83, 0.30, 0.15, 0.1])
-oa_cut = CheckButtons(axcut, ('OTHER ANOMALY',), (False,))#Button(axcut, 'OTHER ANOMALY', color='white', hovercolor='orange')
-oa_cut.on_clicked(label.toggle_oa)
-
-axcut = plt.axes([0.83, 0.15, 0.15, 0.1])
-f_cut = CheckButtons(axcut, ('FAULTY',), (False,))#Button(axcut, 'FAULTY', color='white', hovercolor='red')
-f_cut.on_clicked(label.toggle_faulty)
+case_but.on_clicked(label.case)
+done_but.on_clicked(label.done)
+undo_but.on_clicked(label.undo)
+finish_but.on_clicked(label.finish)
 
 plt.show()
-
