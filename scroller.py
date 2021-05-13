@@ -2,9 +2,13 @@
 
 # Usage - if numpy file volume_i.npy exists:
 # python scroller.py i
-
-
 from __future__ import print_function
+
+import skimage
+import skimage.io as io
+import os
+
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,6 +19,20 @@ from matplotlib.widgets import TextBox, Button, RadioButtons
 from matplotlib.patches import Circle
 import time
 
+def read_png_volume(dir, transform=None):
+
+    vol = []
+    for i in range(len(os.listdir(dir))):
+        a = io.imread(os.path.join(dir, "{}.png".format(i)), as_gray=True)[np.newaxis, ...]
+
+        # a = a[:a.shape[1]]
+        # if transform:
+        #   a = transform(a)
+        vol.append(a)
+
+    return np.concatenate(vol, 0)
+
+
 start = time.time()
 
 # current volume number
@@ -24,7 +42,7 @@ UNDO = False
 DONE = False
 FINISH = False
 
-fig = plt.figure(figsize=(9, 7))
+fig = plt.figure(figsize=(11, 7))
 ax = plt.subplot2grid((1,1), (0,0),)
 
 coords = plt.axes([0.09, 0.25, 0.2, 0.65])
@@ -226,7 +244,12 @@ class IndexTracker(object):
 
 
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
-X = np.random.randn(1024, 256, 64)
+
+X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255
+
+X = np.moveaxis(X, 0, 2)
+# X = np.random.randn(1024, 256, 64)
+# X = np.random.randn(1024, 256, 64)
 
 label = Labels(volume_number)
 tracker = IndexTracker(ax, X, volume_number)
@@ -243,3 +266,4 @@ undo_but.on_clicked(label.undo)
 finish_but.on_clicked(label.finish)
 
 plt.show()
+print("done")
