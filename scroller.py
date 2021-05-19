@@ -10,8 +10,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import exposure
 import sys
-import glob
+import skimage
+import skimage.io as io
 import os
+import glob
 from matplotlib.widgets import TextBox, Button, RadioButtons
 from matplotlib.patches import Circle
 import time
