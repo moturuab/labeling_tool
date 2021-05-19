@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import exposure
 import sys
+import cv2
 import skimage
 import skimage.io as io
 import os
@@ -168,6 +169,16 @@ class IndexTracker(object):
             self.ind = self.ind - 1
         self.update()
 
+    def onkeypress(self, event):
+        sys.stdout.flush()
+        if event.key == 'up' and self.ind < self.slices - 1:
+            self.ind = self.ind + 1
+        elif event.key == 'down' and self.ind > 0:
+            self.ind = self.ind - 1
+        elif event.key == 'left' or event.key == 'right':
+            pass
+        self.update()
+
     def update(self):
         if not DONE:
             self.im.set_data(self.X[:, :, self.ind])
@@ -251,9 +262,9 @@ class IndexTracker(object):
 
 
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
-#X = np.random.randn(1024, 256, 64)
-X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255.0
-X = np.moveaxis(X, 0, 2)
+X = np.random.randn(1024, 256, 64)
+#X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255.0
+#X = np.moveaxis(X, 0, 2)
 
 label = Labels(volume_number)
 tracker = IndexTracker(ax, X, volume_number)
@@ -263,6 +274,7 @@ fig.canvas.mpl_connect('button_press_event', tracker.onclick)
 fig.canvas.mpl_connect('button_press_event', tracker.onpress)
 fig.canvas.mpl_connect('button_release_event', tracker.onrelease)
 fig.canvas.mpl_connect('motion_notify_event', tracker.onmove)
+fig.canvas.mpl_connect('key_press_event', tracker.onkeypress)
 
 case_but.on_clicked(label.case)
 done_but.on_clicked(label.done)
