@@ -181,7 +181,7 @@ class IndexTracker(object):
 
     def onclick(self, click):
         global UNDO
-        if UNDO:
+        if UNDO and len(self.circles) > 0:
             self.circles[-1].set_visible(False)
             del self.points[-1]
             del self.circles[-1]
