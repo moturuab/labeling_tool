@@ -262,9 +262,9 @@ class IndexTracker(object):
 
 
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
-X = np.random.randn(1024, 256, 64)
-#X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255.0
-#X = np.moveaxis(X, 0, 2)
+# = np.random.randn(1024, 256, 64)
+X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255.0
+X = np.moveaxis(X, 0, 2)
 
 label = Labels(volume_number)
 tracker = IndexTracker(ax, X, volume_number)
