@@ -198,7 +198,7 @@ def on_run_click(event):
         print('Please pre-process and split into parts before running the algorithm.')
     else:
         print('Already ran the algorithms and saved the results.')
-        
+
 
 p_but.on_clicked(on_pre_click)
 pre_ax._button = p_but
@@ -213,4 +213,3 @@ a_but.on_clicked(on_run_click)
 run_ax._button = a_but
 
 plt.show()
-
