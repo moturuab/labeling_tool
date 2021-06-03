@@ -14,10 +14,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import exposure
 import sys
+import cv2
+import skimage
+import skimage.io as io
+import os
 import glob
 from matplotlib.widgets import TextBox, Button, RadioButtons
 from matplotlib.patches import Circle
 import time
+from datetime import datetime
+
+def read_png_volume(dir, transform=None):
+
+    vol = []
+    for i in range(len(os.listdir(dir))):
+        a = io.imread(os.path.join(dir, "{}.png".format(i)), as_gray=True)[np.newaxis, ...]
+        vol.append(a)
+
+    return np.concatenate(vol, 0)
 
 def read_png_volume(dir, transform=None):
 
@@ -34,6 +48,7 @@ def read_png_volume(dir, transform=None):
 
 
 start = time.time()
+end = 0
 
 # current volume number
 volume_number = sys.argv[1]
@@ -63,43 +78,48 @@ done_but = Button(done, 'DONE', color='white', hovercolor='green')
 done.set_visible(False)
 
 q1 = plt.axes([0.15, 0.95, 0.7, 0.03])
-q1_but = Button(q1, 'Q1. How mentally demanding was the task?', color='white', hovercolor='white')
+q1_but = Button(q1, 'Q1. How mentally demanding was the task? (1 - not at all, 5 - a great deal)', color='white', hovercolor='white')
 q1.set_visible(False)
 
-q1a = plt.axes([0.15, 0.8, 0.7, 0.15])
+q1a = plt.axes([0.2, 0.8, 0.2, 0.15])
 q1a_but = RadioButtons(q1a, ['1', '2', '3', '4', '5'], (False,))
+q1a.axis('off')
 q1a.set_visible(False)
 
 q2 = plt.axes([0.15, 0.77, 0.7, 0.03])
 q2_but = Button(q2, 'Q2. How hurried or rushed was the pace of the task?', color='white', hovercolor='white')
 q2.set_visible(False)
 
-q2a = plt.axes([0.15, 0.62, 0.7, 0.15])
+q2a = plt.axes([0.2, 0.62, 0.2, 0.15])
 q2a_but = RadioButtons(q2a, ('1', '2', '3', '4', '5'), (False,))
+q2a.axis('off')
 q2a.set_visible(False)
 
 q3 = plt.axes([0.15, 0.59, 0.7, 0.03])
 q3_but = Button(q3, 'Q3. How successful were you in accomplishing what you were asked to do?', color='white', hovercolor='white')
 q3.set_visible(False)
 
-q3a = plt.axes([0.15, 0.44, 0.7, 0.15])
+q3a = plt.axes([0.2, 0.44, 0.2, 0.15])
 q3a_but = RadioButtons(q3a, ('1', '2', '3', '4', '5'), (False,))
+q3a.axis('off')
 q3a.set_visible(False)
 
 q4 = plt.axes([0.15, 0.41, 0.7, 0.03])
 q4_but = Button(q4, 'Q4. How hard did you have to work to accomplish your level of performance?', color='white', hovercolor='white')
 q4.set_visible(False)
 
-q4a = plt.axes([0.15, 0.26, 0.7, 0.15])
+q4a = plt.axes([0.2, 0.26, 0.2, 0.15])
 q4a_but = RadioButtons(q4a, ('1', '2', '3', '4', '5'), (False,))
+q4a.axis('off')
 q4a.set_visible(False)
 
 q5 = plt.axes([0.15, 0.23, 0.7, 0.03])
 q5_but = Button(q5, 'Q5. How insecure, discouraged, irritated, stressed, and annoyed were you?', color='white', hovercolor='white')
 q5.set_visible(False)
 
-q5a = plt.axes([0.15, 0.08, 0.7, 0.15])
+q5a = plt.axes([0.2, 0.08, 0.2, 0.15])
 q5a_but = RadioButtons(q5a, ('1', '2', '3', '4', '5'), (False,))
+q5a.axis('off')
 q5a.set_visible(False)
 
 finish = plt.axes([0.3, 0.02, 0.4, 0.05])
@@ -133,6 +153,8 @@ class Labels():
         finish.set_visible(True)
         global DONE
         DONE = True
+        global end
+        end = time.time()
         fig.canvas.draw_idle()
 
     def finish(self, label):
@@ -175,6 +197,16 @@ class IndexTracker(object):
             self.ind = self.ind - 1
         self.update()
 
+    def onkeypress(self, event):
+        sys.stdout.flush()
+        if event.key == 'up' and self.ind < self.slices - 1:
+            self.ind = self.ind + 1
+        elif event.key == 'down' and self.ind > 0:
+            self.ind = self.ind - 1
+        elif event.key == 'left' or event.key == 'right':
+            pass
+        self.update()
+
     def update(self):
         if not DONE:
             self.im.set_data(self.X[:, :, self.ind])
@@ -190,7 +222,7 @@ class IndexTracker(object):
 
     def onclick(self, click):
         global UNDO
-        if UNDO:
+        if UNDO and len(self.circles) > 0:
             self.circles[-1].set_visible(False)
             del self.points[-1]
             del self.circles[-1]
@@ -204,8 +236,12 @@ class IndexTracker(object):
 
             f.write('VOLUME ' + str(volume_number))
             f.write('\n')
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            f.write(dt_string)
+            f.write('\n')
             global start
-            end = time.time()
+            global end
             f.write('Total time:\n')
             f.write(str(end - start))
             f.write(' seconds\n')
@@ -256,6 +292,7 @@ class IndexTracker(object):
 
 
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
+<<<<<<< HEAD
 
 X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255
 
@@ -267,6 +304,11 @@ Y = np.moveaxis(Y, 0, 2)
 
 # X = np.random.randn(1024, 256, 64)
 # X = np.random.randn(1024, 256, 64)
+=======
+# = np.random.randn(1024, 256, 64)
+X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255.0
+X = np.moveaxis(X, 0, 2)
+>>>>>>> 89006bdf4f47f39cf4589c50c626e36807ab4123
 
 label = Labels(volume_number)
 tracker = IndexTracker(ax, ay, X, Y, volume_number)
@@ -276,6 +318,7 @@ fig.canvas.mpl_connect('button_press_event', tracker.onclick)
 fig.canvas.mpl_connect('button_press_event', tracker.onpress)
 fig.canvas.mpl_connect('button_release_event', tracker.onrelease)
 fig.canvas.mpl_connect('motion_notify_event', tracker.onmove)
+fig.canvas.mpl_connect('key_press_event', tracker.onkeypress)
 
 case_but.on_clicked(label.case)
 done_but.on_clicked(label.done)
