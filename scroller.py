@@ -43,12 +43,16 @@ DONE = False
 FINISH = False
 
 fig = plt.figure(figsize=(11, 7))
-ax = plt.subplot2grid((1,1), (0,0),)
+ax = plt.subplot2grid((1,4), (0, 1),)
+ay = plt.subplot2grid((1,4), (0, 2),)
 
-coords = plt.axes([0.09, 0.25, 0.2, 0.65])
+plt.tight_layout()
+# print(ax)
+
+coords = plt.axes([0.09, 0.25, 0.15, 0.65])
 coords_box = Button(coords, 'Points selected:\n', color='white', hovercolor='white')
 
-undo = plt.axes([0.09, 0.09, 0.2, 0.1])
+undo = plt.axes([0.09, 0.09, 0.15, 0.1])
 undo_but = Button(undo, 'UNDO', color='white', hovercolor='red')
 
 case = plt.axes([0.72, 0.44, 0.2, 0.2])
@@ -144,10 +148,14 @@ class Labels():
 
 # handle scrolling through volume
 class IndexTracker(object):
-    def __init__(self, ax, X, n):
+    def __init__(self, ax, ay, X, Y, n):
         self.ax = ax
         ax.set_title('scrolling through VOLUME {}\n'.format(n))
+
+        self.ay = ay
+
         self.X = X
+        self.Y = Y
         rows, cols, self.slices = X.shape
         self.ind = 0
         self.points = []
@@ -156,6 +164,8 @@ class IndexTracker(object):
         self.move = False
 
         self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+        self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+        
         self.update()
 
     def onscroll(self, event):
@@ -168,6 +178,8 @@ class IndexTracker(object):
     def update(self):
         if not DONE:
             self.im.set_data(self.X[:, :, self.ind])
+            self.mask.set_data(self.Y[:, :, self.ind])
+
             for (point, circ) in zip(self.points, self.circles):
                 if self.ind != point[2]:
                     circ.set_visible(False)
@@ -248,11 +260,16 @@ class IndexTracker(object):
 X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255
 
 X = np.moveaxis(X, 0, 2)
+
+Y = np.random.randn(1024, 256, 64)
+# Y = read_png_volume("../wbmri/masks/volume_{}".format(sys.argv[1])) / 255
+Y = np.moveaxis(Y, 0, 2)
+
 # X = np.random.randn(1024, 256, 64)
 # X = np.random.randn(1024, 256, 64)
 
 label = Labels(volume_number)
-tracker = IndexTracker(ax, X, volume_number)
+tracker = IndexTracker(ax, ay, X, Y, volume_number)
 
 fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
 fig.canvas.mpl_connect('button_press_event', tracker.onclick)
