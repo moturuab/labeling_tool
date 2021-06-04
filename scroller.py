@@ -298,7 +298,7 @@ class IndexTracker(object):
 X = read_png_volume("nodule_im/volume_{}".format(sys.argv[1])) / 255
 X = np.moveaxis(X, 0, 2)
 
-Y = read_png_volume("masks/masks/volume_{}".format(sys.argv[1]))
+Y = read_png_volume("masks/volume_{}".format(sys.argv[1]))
 # Y = np.repeat(X.copy()[:, :, :,np.newaxis], 3, axis=3)
 # Y[:, :, :, :2] = 0
 
