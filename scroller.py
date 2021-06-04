@@ -52,6 +52,7 @@ end = 0
 
 # current volume number
 volume_number = sys.argv[1]
+mode = sys.argv[2]
 
 UNDO = False
 DONE = False
@@ -186,7 +187,7 @@ class IndexTracker(object):
         self.move = False
 
         self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
-        self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+        self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='rgb', vmin=0, vmax=1)
         
         self.update()
 
@@ -293,13 +294,16 @@ class IndexTracker(object):
 
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
 
-X = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255
 
+X = read_png_volume("nodule_im/volume_{}".format(sys.argv[1])) / 255
 X = np.moveaxis(X, 0, 2)
 
-Y = np.random.randn(1024, 256, 64)
-# Y = read_png_volume("../wbmri/masks/volume_{}".format(sys.argv[1])) / 255
-Y = np.moveaxis(Y, 0, 2)
+Y = read_png_volume("masks/masks/volume_{}".format(sys.argv[1]))
+# Y = np.repeat(X.copy()[:, :, :,np.newaxis], 3, axis=3)
+# Y[:, :, :, :2] = 0
+
+# mask = read_png_volume("../wbmri/png/volume_{}".format(sys.argv[1])) / 255
+
 
 # X = np.random.randn(1024, 256, 64)
 # X = np.random.randn(1024, 256, 64)
