@@ -28,16 +28,16 @@ def read_png_volume(dir, transform=None):
 
     vol = []
     for i in range(len(os.listdir(dir))):
-        a = io.imread(os.path.join(dir, "slice_{}.png".format(i)), as_gray=True)[np.newaxis, ...]
+        a = io.imread(os.path.join(dir, "{}.png".format(i)), as_gray=True)[np.newaxis, ...]
         vol.append(a)
 
     return np.concatenate(vol, 0)
 
-def read_png_volume(dir, transform=None):
+def read_png_volume2(dir, transform=None):
 
     vol = []
     for i in range(len(os.listdir(dir))):
-        a = io.imread(os.path.join(dir, "{}.png".format(i)), as_gray=True)[np.newaxis, ...]
+        a = io.imread(os.path.join(dir, "slice_{}.png".format(i)), as_gray=True)[np.newaxis, ...]
 
         # a = a[:a.shape[1]]
         # if transform:
@@ -187,7 +187,7 @@ class IndexTracker(object):
         self.move = False
 
         self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
-        self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='rgb', vmin=0, vmax=1)
+        self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
         
         self.update()
 
@@ -298,7 +298,11 @@ class IndexTracker(object):
 X = read_png_volume("nodule_im/volume_{}".format(sys.argv[1])) / 255
 X = np.moveaxis(X, 0, 2)
 
-Y = read_png_volume("masks/volume_{}".format(sys.argv[1]))
+
+Y = read_png_volume2("masks/volume_{}".format(sys.argv[1])) / 10
+Y = np.moveaxis(Y , 0, 2)
+
+print(Y.shape, X.shape, "------------")
 # Y = np.repeat(X.copy()[:, :, :,np.newaxis], 3, axis=3)
 # Y[:, :, :, :2] = 0
 
