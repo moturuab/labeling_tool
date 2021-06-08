@@ -62,7 +62,8 @@ fig = plt.figure(figsize=(11, 7))
 ax = plt.subplot2grid((1,4), (0, 1),)
 ay = plt.subplot2grid((1,4), (0, 2),)
 
-plt.tight_layout()
+plt.subplots_adjust(top=0.95)
+# plt.tight_layout()
 # print(ax)
 
 coords = plt.axes([0.09, 0.25, 0.15, 0.65])
@@ -141,6 +142,8 @@ class Labels():
         case.set_visible(False)
         done.set_visible(False)
         ax.set_visible(False)
+        ay.set_visible(False)
+
         q1.set_visible(True)
         q1a.set_visible(True)
         q2.set_visible(True)
@@ -173,7 +176,7 @@ class Labels():
 class IndexTracker(object):
     def __init__(self, ax, ay, X, Y, n):
         self.ax = ax
-        ax.set_title('scrolling through VOLUME {}\n'.format(n))
+        fig.suptitle('scrolling through VOLUME {}\n'.format(n))
 
         self.ay = ay
 
@@ -299,10 +302,15 @@ X = read_png_volume("nodule_im/volume_{}".format(sys.argv[1])) / 255
 X = np.moveaxis(X, 0, 2)
 
 
-Y = read_png_volume2("masks/volume_{}".format(sys.argv[1])) / 10
-Y = np.moveaxis(Y , 0, 2)
+if sys.argv[2] == "m":
 
-print(Y.shape, X.shape, "------------")
+    Y = read_png_volume2("masks/volume_{}".format(sys.argv[1])) / 50
+    Y = np.moveaxis(Y , 0, 2)[..., np.newaxis]
+else:
+    Y = np.zeros_like(X)
+
+
+# print(Y.shape, X.shape, "------------")
 # Y = np.repeat(X.copy()[:, :, :,np.newaxis], 3, axis=3)
 # Y[:, :, :, :2] = 0
 
