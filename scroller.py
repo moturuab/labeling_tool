@@ -8,13 +8,11 @@ import skimage
 import skimage.io as io
 import os
 
-
-
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import exposure
 import sys
-#import cv2
 import skimage
 import skimage.io as io
 import os
@@ -52,77 +50,31 @@ end = 0
 
 # current volume number
 volume_number = sys.argv[1]
-mode = sys.argv[2]
-
+    
 UNDO = False
 DONE = False
 FINISH = False
 
-fig = plt.figure(figsize=(11, 7))
+fig = plt.figure(figsize=(11, 10))
 ax = plt.subplot2grid((1,4), (0, 1),)
 ay = plt.subplot2grid((1,4), (0, 2),)
 
 plt.subplots_adjust(top=0.95)
-# plt.tight_layout()
+fig.tight_layout()
 # print(ax)
 
-coords = plt.axes([0.09, 0.25, 0.15, 0.65])
+coords = plt.axes([0.034, 0.25, 0.15, 0.65])
 coords_box = Button(coords, 'Points selected:\n', color='white', hovercolor='white')
 
-undo = plt.axes([0.09, 0.09, 0.15, 0.1])
+undo = plt.axes([0.034, 0.09, 0.15, 0.1])
 undo_but = Button(undo, 'UNDO', color='white', hovercolor='red')
 
-case = plt.axes([0.72, 0.44, 0.2, 0.2])
+case = plt.axes([0.772, 0.44, 0.2, 0.2])
 case_but = RadioButtons(case, ('NO FOLLOW-UP', 'FOLLOW-UP', 'BIOPSY'), (False,))
 
-done = plt.axes([0.72, 0.25, 0.2, 0.1])
+done = plt.axes([0.772, 0.25, 0.2, 0.1])
 done_but = Button(done, 'DONE', color='white', hovercolor='green')
 done.set_visible(False)
-
-q1 = plt.axes([0.15, 0.95, 0.7, 0.03])
-q1_but = Button(q1, 'Q1. How mentally demanding was the task? (1 - not at all, 5 - a great deal)', color='white', hovercolor='white')
-q1.set_visible(False)
-
-q1a = plt.axes([0.2, 0.8, 0.2, 0.15])
-q1a_but = RadioButtons(q1a, ['1', '2', '3', '4', '5'], (False,))
-q1a.axis('off')
-q1a.set_visible(False)
-
-q2 = plt.axes([0.15, 0.77, 0.7, 0.03])
-q2_but = Button(q2, 'Q2. How hurried or rushed was the pace of the task?', color='white', hovercolor='white')
-q2.set_visible(False)
-
-q2a = plt.axes([0.2, 0.62, 0.2, 0.15])
-q2a_but = RadioButtons(q2a, ('1', '2', '3', '4', '5'), (False,))
-q2a.axis('off')
-q2a.set_visible(False)
-
-q3 = plt.axes([0.15, 0.59, 0.7, 0.03])
-q3_but = Button(q3, 'Q3. How successful were you in accomplishing what you were asked to do?', color='white', hovercolor='white')
-q3.set_visible(False)
-
-q3a = plt.axes([0.2, 0.44, 0.2, 0.15])
-q3a_but = RadioButtons(q3a, ('1', '2', '3', '4', '5'), (False,))
-q3a.axis('off')
-q3a.set_visible(False)
-
-q4 = plt.axes([0.15, 0.41, 0.7, 0.03])
-q4_but = Button(q4, 'Q4. How hard did you have to work to accomplish your level of performance?', color='white', hovercolor='white')
-q4.set_visible(False)
-
-q4a = plt.axes([0.2, 0.26, 0.2, 0.15])
-q4a_but = RadioButtons(q4a, ('1', '2', '3', '4', '5'), (False,))
-q4a.axis('off')
-q4a.set_visible(False)
-
-q5 = plt.axes([0.15, 0.23, 0.7, 0.03])
-q5_but = Button(q5, 'Q5. How insecure, discouraged, irritated, stressed, and annoyed were you?', color='white', hovercolor='white')
-q5.set_visible(False)
-
-q5a = plt.axes([0.2, 0.08, 0.2, 0.15])
-q5a_but = RadioButtons(q5a, ('1', '2', '3', '4', '5'), (False,))
-q5a.axis('off')
-q5a.set_visible(False)
 
 finish = plt.axes([0.3, 0.02, 0.4, 0.05])
 finish_but = Button(finish, 'FINISH', color='white', hovercolor='green')
@@ -144,19 +96,46 @@ class Labels():
         ax.set_visible(False)
         ay.set_visible(False)
 
-        q1.set_visible(True)
-        q1a.set_visible(True)
-        q2.set_visible(True)
-        q2a.set_visible(True)
-        q3.set_visible(True)
-        q3a.set_visible(True)
-        q4.set_visible(True)
-        q4a.set_visible(True)
-        q5.set_visible(True)
-        q5a.set_visible(True)
         finish.set_visible(True)
+
+        self.q1 = plt.axes([0.15, 0.95, 0.7, 0.03])
+        self.q1_but = Button(self.q1, 'Q1. How mentally demanding was the task? (1 - not at all, 5 - a great deal)', color='white', hovercolor='white')
+
+        self.q1a = plt.axes([0.2, 0.8, 0.2, 0.15])
+        self.q1a_but = RadioButtons(self.q1a, ['1', '2', '3', '4', '5'], (False,))
+        self.q1a.axis('off')
+
+        self.q2 = plt.axes([0.15, 0.77, 0.7, 0.03])
+        self.q2_but = Button(self.q2, 'Q2. How hurried or rushed was the pace of the task?', color='white', hovercolor='white')
+
+        self.q2a = plt.axes([0.2, 0.62, 0.2, 0.15])
+        self.q2a_but = RadioButtons(self.q2a, ('1', '2', '3', '4', '5'), (False,))
+        self.q2a.axis('off')
+
+        self.q3 = plt.axes([0.15, 0.59, 0.7, 0.03])
+        self.q3_but = Button(self.q3, 'Q3. How successful were you in accomplishing what you were asked to do?', color='white', hovercolor='white')
+
+        self.q3a = plt.axes([0.2, 0.44, 0.2, 0.15])
+        self.q3a_but = RadioButtons(self.q3a, ('1', '2', '3', '4', '5'), (False,))
+        self.q3a.axis('off')
+
+        self.q4 = plt.axes([0.15, 0.41, 0.7, 0.03])
+        self.q4_but = Button(self.q4, 'Q4. How hard did you have to work to accomplish your level of performance?', color='white', hovercolor='white')
+
+        self.q4a = plt.axes([0.2, 0.26, 0.2, 0.15])
+        self.q4a_but = RadioButtons(self.q4a, ('1', '2', '3', '4', '5'), (False,))
+        self.q4a.axis('off')
+
+        self.q5 = plt.axes([0.15, 0.23, 0.7, 0.03])
+        self.q5_but = Button(self.q5, 'Q5. How insecure, discouraged, irritated, stressed, and annoyed were you?', color='white', hovercolor='white')
+
+        self.q5a = plt.axes([0.2, 0.08, 0.2, 0.15])
+        self.q5a_but = RadioButtons(self.q5a, ('1', '2', '3', '4', '5'), (False,))
+        self.q5a.axis('off')
+
         global DONE
         DONE = True
+        fig.suptitle('')
         global end
         end = time.time()
         fig.canvas.draw_idle()
@@ -174,11 +153,12 @@ class Labels():
 
 # handle scrolling through volume
 class IndexTracker(object):
-    def __init__(self, ax, ay, X, Y, n):
+    def __init__(self, label, ax, ay, X, Y, n):
         self.ax = ax
         fig.suptitle('scrolling through VOLUME {}\n'.format(n))
 
         self.ay = ay
+        self.label = label
 
         self.X = X
         self.Y = Y
@@ -188,7 +168,6 @@ class IndexTracker(object):
         self.circles = []
         self.press = False
         self.move = False
-
         self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
         self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
         
@@ -223,6 +202,7 @@ class IndexTracker(object):
                     circ.set_visible(True)
             ax.set_ylabel('slice %s' % self.ind)
             self.im.axes.figure.canvas.draw()
+            self.mask.axes.figure.canvas.draw()
 
     def onclick(self, click):
         global UNDO
@@ -232,10 +212,11 @@ class IndexTracker(object):
             del self.circles[-1]
             UNDO = False
             self.im.axes.figure.canvas.draw()
+            self.mask.axes.figure.canvas.draw()
 
         global DONE
         global FINISH
-        if DONE and FINISH and q1a_but.value_selected is not None and q2a_but.value_selected is not None and q3a_but.value_selected is not None and q4a_but.value_selected is not None and q5a_but.value_selected is not None:
+        if DONE and FINISH and self.label.q1a_but.value_selected is not None and self.label.q2a_but.value_selected is not None and self.label.q3a_but.value_selected is not None and self.label.q4a_but.value_selected is not None and self.label.q5a_but.value_selected is not None:
             f = open('labels_' + str(volume_number) + '.txt', 'w')
 
             f.write('VOLUME ' + str(volume_number))
@@ -256,16 +237,17 @@ class IndexTracker(object):
             f.write('Exam feedback:\n')
             f.write(case_but.value_selected)
             s = '\nQuestionnaire answers:\n'
-            s += q1a_but.value_selected + ',' + q2a_but.value_selected + ',' + q3a_but.value_selected + ',' + q4a_but.value_selected + ',' + q5a_but.value_selected
+            s += self.label.q1a_but.value_selected + ',' + self.label.q2a_but.value_selected + ',' + self.label.q3a_but.value_selected + ',' + self.label.q4a_but.value_selected + ',' + self.label.q5a_but.value_selected
             f.write(s)
             f.close()
             sys.exit()
 
-        if self.press and not self.move:
+        if not DONE and self.press and not self.move:
             self.point = (click.xdata, click.ydata)
+            print(self.point)
             if self.point != (None, None) and int(self.point[0]) > 1 and int(self.point[1]) > 1:
                 self.points.append([self.point[0], self.point[1], self.ind])
-                circ = Circle((int(self.point[0]), int(self.point[1]), self.ind), 20, fill=False, edgecolor='red', lw=2)
+                circ = Circle((int(self.point[0]), int(self.point[1]), self.ind), 25, fill=False, edgecolor='red', lw=2)
                 self.circles.append(circ)
                 self.ax.add_patch(circ)
                 s = 'Points selected:\n'
@@ -298,17 +280,22 @@ class IndexTracker(object):
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
 
 
-X = read_png_volume("nodule_im/volume_{}".format(sys.argv[1])) / 255
-X = np.moveaxis(X, 0, 2)
-
-
-if sys.argv[2] == "m":
-
-    Y = read_png_volume2("masks/volume_{}".format(sys.argv[1])) / 50
-    Y = np.moveaxis(Y , 0, 2)[..., np.newaxis]
+if len(sys.argv) < 3:
+    X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
+    X = np.moveaxis(X, 0, 2)
+    if int(volume_number) <= 25:
+        Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 50.0
+        Y = np.moveaxis(Y, 0, 2)
+    else:
+        Y = np.zeros_like(X)
 else:
-    Y = np.zeros_like(X)
-
+    X = read_png_volume("nodule_im/volume_{}".format(volume_number)) / 255.0
+    X = np.moveaxis(X, 0, 2)
+    if int(volume_number) <= 25:
+        Y = read_png_volume2("nodule_im_masks/volume_{}".format(volume_number)) / 50.0
+        Y = np.moveaxis(Y, 0, 2)
+    else:
+        Y = np.zeros_like(X)
 
 # print(Y.shape, X.shape, "------------")
 # Y = np.repeat(X.copy()[:, :, :,np.newaxis], 3, axis=3)
@@ -321,10 +308,10 @@ else:
 # X = np.random.randn(1024, 256, 64)
 
 label = Labels(volume_number)
-tracker = IndexTracker(ax, ay, X, Y, volume_number)
+tracker = IndexTracker(label, ax, ay, X, Y, volume_number)
 
 fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
-fig.canvas.mpl_connect('button_press_event', tracker.onclick)
+fig.canvas.mpl_connect('button_click_event', tracker.onclick)
 fig.canvas.mpl_connect('button_press_event', tracker.onpress)
 fig.canvas.mpl_connect('button_release_event', tracker.onrelease)
 fig.canvas.mpl_connect('motion_notify_event', tracker.onmove)
@@ -336,4 +323,3 @@ undo_but.on_clicked(label.undo)
 finish_but.on_clicked(label.finish)
 
 plt.show()
-print("done")
