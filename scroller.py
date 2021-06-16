@@ -61,7 +61,6 @@ ay = plt.subplot2grid((1,4), (0, 2),)
 
 plt.subplots_adjust(top=0.95)
 fig.tight_layout()
-# print(ax)
 
 coords = plt.axes([0.034, 0.25, 0.15, 0.65])
 coords_box = Button(coords, 'Points selected:\n', color='white', hovercolor='white')
@@ -244,7 +243,6 @@ class IndexTracker(object):
 
         if not DONE and self.press and not self.move:
             self.point = (click.xdata, click.ydata)
-            print(self.point)
             if self.point != (None, None) and int(self.point[0]) > 1 and int(self.point[1]) > 1:
                 self.points.append([self.point[0], self.point[1], self.ind])
                 circ = Circle((int(self.point[0]), int(self.point[1]), self.ind), 25, fill=False, edgecolor='red', lw=2)
