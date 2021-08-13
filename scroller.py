@@ -171,7 +171,7 @@ class IndexTracker(object):
         self.mask = self.Y[:, :, self.ind]
         masked = np.ma.masked_where(self.mask == 0, self.mask)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.5, vmin=0, vmax=1)
+        self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.5)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
         self.update()
@@ -286,9 +286,11 @@ class IndexTracker(object):
 
 if len(sys.argv) < 3:
     X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
+    print(np.max(X))
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
         Y = read_png_volume2("masks/volume_{}".format(volume_number)) #/ 255.0
+        print(np.max(Y))
         Y = np.moveaxis(Y, 0, 2)
     else:
         Y = np.zeros_like(X)
