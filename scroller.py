@@ -50,14 +50,14 @@ end = 0
 
 # current volume number
 volume_number = sys.argv[1]
-    
+
 UNDO = False
 DONE = False
 FINISH = False
 
 fig = plt.figure(figsize=(11, 10))
-ax = plt.subplot2grid((1,4), (0, 1),)
-ay = plt.subplot2grid((1,4), (0, 2),)
+ax = plt.subplot2grid((1,3), (0, 1),)
+#ay = plt.subplot2grid((1,4), (0, 2),)
 
 plt.subplots_adjust(top=0.95)
 fig.tight_layout()
@@ -93,7 +93,7 @@ class Labels():
         case.set_visible(False)
         done.set_visible(False)
         ax.set_visible(False)
-        ay.set_visible(False)
+        #ay.set_visible(False)
 
         finish.set_visible(True)
 
@@ -152,11 +152,11 @@ class Labels():
 
 # handle scrolling through volume
 class IndexTracker(object):
-    def __init__(self, label, ax, ay, X, Y, n):
+    def __init__(self, label, ax, X, Y, n):
         self.ax = ax
         fig.suptitle('scrolling through VOLUME {}\n'.format(n))
 
-        self.ay = ay
+        #self.ay = ay
         self.label = label
 
         self.X = X
@@ -168,8 +168,12 @@ class IndexTracker(object):
         self.press = False
         self.move = False
         self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
-        self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
-        
+        self.mask = self.Y[:, :, self.ind]
+        masked = np.ma.masked_where(self.mask == 0, self.mask)
+        # https://matplotlib.org/stable/tutorials/colors/colormaps.html
+        self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.5)
+        #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+
         self.update()
 
     def onscroll(self, event):
@@ -192,7 +196,10 @@ class IndexTracker(object):
     def update(self):
         if not DONE:
             self.im.set_data(self.X[:, :, self.ind])
-            self.mask.set_data(self.Y[:, :, self.ind])
+            self.mask = self.Y[:, :, self.ind]
+            masked = np.ma.masked_where(self.mask == 0, self.mask)
+            self.im.set_data(masked)
+            #self.mask.set_data(self.Y[:, :, self.ind])
 
             for (point, circ) in zip(self.points, self.circles):
                 if self.ind != point[2]:
@@ -201,7 +208,7 @@ class IndexTracker(object):
                     circ.set_visible(True)
             ax.set_ylabel('slice %s' % self.ind)
             self.im.axes.figure.canvas.draw()
-            self.mask.axes.figure.canvas.draw()
+            #self.mask.axes.figure.canvas.draw()
 
     def onclick(self, click):
         global UNDO
@@ -211,7 +218,7 @@ class IndexTracker(object):
             del self.circles[-1]
             UNDO = False
             self.im.axes.figure.canvas.draw()
-            self.mask.axes.figure.canvas.draw()
+            #self.mask.axes.figure.canvas.draw()
 
         global DONE
         global FINISH
@@ -277,7 +284,6 @@ class IndexTracker(object):
 
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
 
-
 if len(sys.argv) < 3:
     X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
     X = np.moveaxis(X, 0, 2)
@@ -303,10 +309,16 @@ else:
 
 
 # X = np.random.randn(1024, 256, 64)
-# X = np.random.randn(1024, 256, 64)
+#X = np.random.randn(1024, 256, 64)
+#Y = np.zeros((1024, 256, 64))
+#Y[30:-30, 30:-30, :] = 0
+#Y[40:-40, 40:-40, :] = 0.25
+#Y[50:-50, 50:-50, :] = 0.5
+#Y[60:-60, 60:-60, :] = 0.75
+#Y[70:-70, 70:-70, :] = 1
 
 label = Labels(volume_number)
-tracker = IndexTracker(label, ax, ay, X, Y, volume_number)
+tracker = IndexTracker(label, ax, X, Y, volume_number)
 
 fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
 fig.canvas.mpl_connect('button_click_event', tracker.onclick)
