@@ -17,7 +17,6 @@ import skimage
 import skimage.io as io
 import os
 import glob
-from PIL import Image
 from matplotlib.widgets import TextBox, Button, RadioButtons
 from matplotlib.patches import Circle
 import time
@@ -168,22 +167,12 @@ class IndexTracker(object):
         self.circles = []
         self.press = False
         self.move = False
-        im = self.X[:, :, self.ind] #, cmap='gray', vmin=0, vmax=1)
-        self.shape = im.swapaxes(0, 1).shape
-        im = np.stack((im,)*3, axis=-1)
-        im = np.dstack((im, np.zeros((np.shape(im)[0], np.shape(im)[1]))))
-        mask = self.Y[:, :, self.ind]
-        mask = np.stack((mask,)*3, axis=-1)
-        mask = np.dstack((mask, np.zeros((np.shape(mask)[0], np.shape(mask)[1]))))
-        #masked = np.ma.masked_where(self.mask == 0, self.mask)
+        self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+        self.mask = self.Y[:, :, self.ind]
+        masked = np.ma.masked_where(self.mask == 0, self.mask)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        #self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.9)
+        self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.5)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
-
-        masked = Image.new('RGBA', self.shape)
-        masked = Image.alpha_composite(masked, Image.fromarray(im.astype('uint8'), 'RGBA'))
-        masked = Image.alpha_composite(masked, Image.fromarray(mask.astype('uint8'), 'RGBA'))
-        self.im = ax.imshow(masked, cmap='jet', vmin=0, vmax=1)
 
         self.update()
 
@@ -206,16 +195,9 @@ class IndexTracker(object):
 
     def update(self):
         if not DONE:
-            im = self.X[:, :, self.ind] #, cmap='gray', vmin=0, vmax=1)
-            self.shape = im.swapaxes(0, 1).shape
-            im = np.stack((im,)*3, axis=-1)
-            im = np.dstack((im, np.zeros((np.shape(im)[0], np.shape(im)[1]))))
-            mask = self.Y[:, :, self.ind]
-            mask = np.stack((mask,)*3, axis=-1)
-            mask = np.dstack((mask, np.zeros((np.shape(mask)[0], np.shape(mask)[1]))))
-            masked = Image.new('RGBA', self.shape)
-            masked = Image.alpha_composite(masked, Image.fromarray(im.astype('uint8'), 'RGBA'))
-            masked = Image.alpha_composite(masked, Image.fromarray(mask.astype('uint8'), 'RGBA'))
+            self.im.set_data(self.X[:, :, self.ind])
+            self.mask = self.Y[:, :, self.ind]
+            masked = np.ma.masked_where(self.mask == 0, self.mask)
             self.im.set_data(masked)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
@@ -303,24 +285,18 @@ class IndexTracker(object):
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
 
 if len(sys.argv) < 3:
-    X = read_png_volume("volumes/volume_{}".format(volume_number))
+    X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
     X = np.moveaxis(X, 0, 2)
-    print(X.shape)
-    print(X.min())
-    print(X.max())
     if int(volume_number) <= 25:
-        Y = read_png_volume2("masks/volume_{}".format(volume_number))
+        Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 50.0
         Y = np.moveaxis(Y, 0, 2)
-        print(Y.shape)
-        print(Y.min())
-        print(Y.max())
     else:
         Y = np.zeros_like(X)
 else:
     X = read_png_volume("nodule_im/volume_{}".format(volume_number)) / 255.0
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
-        Y = read_png_volume2("nodule_im_masks/volume_{}".format(volume_number)) / 255.0
+        Y = read_png_volume2("nodule_im_masks/volume_{}".format(volume_number)) / 50.0
         Y = np.moveaxis(Y, 0, 2)
     else:
         Y = np.zeros_like(X)
