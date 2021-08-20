@@ -289,7 +289,8 @@ if len(sys.argv) < 3:
     print(np.max(X))
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
-        Y = read_png_volume2("masks/volume_{}".format(volume_number)) #/ 255.0
+        Y = read_png_volume2("masks/volume_{}".format(volume_number))
+        Y = Y/max(np.max(Y))
         print(np.max(Y))
         Y = np.moveaxis(Y, 0, 2)
     else:
