@@ -180,9 +180,7 @@ class IndexTracker(object):
         #self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.9)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
-        self.im = Image.new("RGBA", self.shape)
-        print(np.shape(self.im))
-        print(np.shape(Image.fromarray(im.astype('uint8'), 'RGBA')))
+        self.im = Image.new('RGBA', self.shape)
         self.im = Image.alpha_composite(self.im, Image.fromarray(im.astype('uint8'), 'RGBA'))
         self.im = Image.alpha_composite(self.im, Image.fromarray(mask.astype('uint8'), 'RGBA'))
         self.im = ax.imshow(self.im)
@@ -208,11 +206,16 @@ class IndexTracker(object):
 
     def update(self):
         if not DONE:
-            im = self.X[:, :, self.ind]
+            im = self.X[:, :, self.ind] #, cmap='gray', vmin=0, vmax=1)
+            self.shape = im.swapaxes(0, 1).shape
+            im = np.stack((im,)*3, axis=-1)
+            im = np.dstack((im, np.zeros((np.shape(im)[0], np.shape(im)[1]))))
             mask = self.Y[:, :, self.ind]
-            masked = Image.new("RGBA", self.shape)
-            masked = Image.alpha_composite(masked, Image.fromarray(im))
-            masked = Image.alpha_composite(masked, Image.fromarray(mask))
+            mask = np.stack((mask,)*3, axis=-1)
+            mask = np.dstack((mask, np.zeros((np.shape(mask)[0], np.shape(mask)[1]))))
+            masked = Image.new('RGBA', self.shape)
+            masked = Image.alpha_composite(self.im, Image.fromarray(im.astype('uint8'), 'RGBA'))
+            masked = Image.alpha_composite(self.im, Image.fromarray(mask.astype('uint8'), 'RGBA'))
             self.im.set_data(masked)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
