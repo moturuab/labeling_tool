@@ -167,12 +167,17 @@ class IndexTracker(object):
         self.circles = []
         self.press = False
         self.move = False
-        self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
-        self.mask = self.Y[:, :, self.ind]
-        masked = np.ma.masked_where(self.mask == 0, self.mask)
+        im = self.X[:, :, self.ind] #, cmap='gray', vmin=0, vmax=1)
+        mask = self.Y[:, :, self.ind]
+        #masked = np.ma.masked_where(self.mask == 0, self.mask)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.9)
+        #self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.9)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+
+        self.im = Image.new("RGBA", im.size)
+        self.im = Image.alpha_composite(self.im, im)
+        self.im = Image.alpha_composite(self.im, mask)
+        self.im = ax.imshow(self.im)
 
         self.update()
 
@@ -195,9 +200,11 @@ class IndexTracker(object):
 
     def update(self):
         if not DONE:
-            self.im.set_data(self.X[:, :, self.ind])
-            self.mask = self.Y[:, :, self.ind]
-            masked = np.ma.masked_where(self.mask == 0, self.mask)
+            im = self.X[:, :, self.ind]
+            mask = self.Y[:, :, self.ind]
+            masked = Image.new("RGBA", im.size)
+            masked = Image.alpha_composite(masked, im)
+            masked = Image.alpha_composite(masked, mask)
             self.im.set_data(masked)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
