@@ -169,6 +169,7 @@ class IndexTracker(object):
         self.press = False
         self.move = False
         im = self.X[:, :, self.ind] #, cmap='gray', vmin=0, vmax=1)
+        self.shape = im.swapaxes(0, 1).shape
         im = np.stack((im,)*3, axis=-1)
         im = np.dstack((im, np.zeros((np.shape(im)[0], np.shape(im)[1]))))
         mask = self.Y[:, :, self.ind]
@@ -179,7 +180,7 @@ class IndexTracker(object):
         #self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.9)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
-        self.im = Image.new("RGBA", im.swapaxes((0, 1)).shape)
+        self.im = Image.new("RGBA", self.shape)
         print(np.shape(self.im))
         print(np.shape(Image.fromarray(im)))
         self.im = Image.alpha_composite(self.im, Image.fromarray(im))
@@ -209,7 +210,7 @@ class IndexTracker(object):
         if not DONE:
             im = self.X[:, :, self.ind]
             mask = self.Y[:, :, self.ind]
-            masked = Image.new("RGBA", im.swapaxes(0, 1).shape)
+            masked = Image.new("RGBA", self.shape)
             masked = Image.alpha_composite(masked, Image.fromarray(im))
             masked = Image.alpha_composite(masked, Image.fromarray(mask))
             self.im.set_data(masked)
