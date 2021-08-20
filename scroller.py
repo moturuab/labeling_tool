@@ -169,6 +169,7 @@ class IndexTracker(object):
         self.press = False
         self.move = False
         im = self.X[:, :, self.ind] #, cmap='gray', vmin=0, vmax=1)
+        print(im.size)
         mask = self.Y[:, :, self.ind]
         #masked = np.ma.masked_where(self.mask == 0, self.mask)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
