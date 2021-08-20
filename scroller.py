@@ -182,9 +182,9 @@ class IndexTracker(object):
 
         self.im = Image.new("RGBA", self.shape)
         print(np.shape(self.im))
-        print(np.shape(Image.fromarray(im)))
-        self.im = Image.alpha_composite(self.im, Image.fromarray(im.astype('uint8'), 'RGB'))
-        self.im = Image.alpha_composite(self.im, Image.fromarray(mask.astype('uint8'), 'RGB'))
+        print(np.shape(Image.fromarray(im.astype('uint8'), 'RGBA')))
+        self.im = Image.alpha_composite(self.im, Image.fromarray(im.astype('uint8'), 'RGBA'))
+        self.im = Image.alpha_composite(self.im, Image.fromarray(mask.astype('uint8'), 'RGBA'))
         self.im = ax.imshow(self.im)
 
         self.update()
