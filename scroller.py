@@ -26,7 +26,7 @@ def read_png_volume(dir, transform=None):
 
     vol = []
     for i in range(len(os.listdir(dir))):
-        a = io.imread(os.path.join(dir, "{}.png".format(i)))[np.newaxis, ...]
+        a = io.imread(os.path.join(dir, "{}.png".format(i)), as_gray=True)[np.newaxis, ...]
         vol.append(a)
 
     return np.concatenate(vol, 0)
@@ -35,7 +35,7 @@ def read_png_volume2(dir, transform=None):
 
     vol = []
     for i in range(len(os.listdir(dir))):
-        a = io.imread(os.path.join(dir, "slice_{}.png".format(i)))[np.newaxis, ...]
+        a = io.imread(os.path.join(dir, "slice_{}.png".format(i)), as_gray=True)[np.newaxis, ...]
 
         # a = a[:a.shape[1]]
         # if transform:
@@ -287,9 +287,11 @@ class IndexTracker(object):
 if len(sys.argv) < 3:
     X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
     X = np.moveaxis(X, 0, 2)
+    print(X.shape)
     if int(volume_number) <= 25:
         Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 50.0
         Y = np.moveaxis(Y, 0, 2)
+        print(Y.shape)
     else:
         Y = np.zeros_like(X)
 else:
