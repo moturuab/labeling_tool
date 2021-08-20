@@ -17,6 +17,7 @@ import skimage
 import skimage.io as io
 import os
 import glob
+from PIL import Image
 from matplotlib.widgets import TextBox, Button, RadioButtons
 from matplotlib.patches import Circle
 import time
