@@ -214,8 +214,8 @@ class IndexTracker(object):
             mask = np.stack((mask,)*3, axis=-1)
             mask = np.dstack((mask, np.zeros((np.shape(mask)[0], np.shape(mask)[1]))))
             masked = Image.new('RGBA', self.shape)
-            masked = Image.alpha_composite(self.im, Image.fromarray(im.astype('uint8'), 'RGBA'))
-            masked = Image.alpha_composite(self.im, Image.fromarray(mask.astype('uint8'), 'RGBA'))
+            masked = Image.alpha_composite(masked, Image.fromarray(im.astype('uint8'), 'RGBA'))
+            masked = Image.alpha_composite(masked, Image.fromarray(mask.astype('uint8'), 'RGBA'))
             self.im.set_data(masked)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
