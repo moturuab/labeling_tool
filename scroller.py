@@ -285,12 +285,12 @@ class IndexTracker(object):
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
 
 if len(sys.argv) < 3:
-    X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
+    X = read_png_volume("volumes/volume_{}".format(volume_number)) #/ 255.0
     print(np.max(X))
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
         Y = read_png_volume2("masks/volume_{}".format(volume_number))
-        Y = Y/np.max(Y)
+        #Y = Y/np.max(Y)
         print(np.max(Y))
         Y = np.moveaxis(Y, 0, 2)
     else:
