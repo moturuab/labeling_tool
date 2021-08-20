@@ -177,8 +177,8 @@ class IndexTracker(object):
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
         self.im = Image.new("RGBA", im.shape)
-        self.im = Image.alpha_composite(self.im, im)
-        self.im = Image.alpha_composite(self.im, mask)
+        self.im = Image.alpha_composite(self.im, Image.fromarray(im)))
+        self.im = Image.alpha_composite(self.im, Image.fromarray(mask))
         self.im = ax.imshow(self.im)
 
         self.update()
@@ -205,8 +205,8 @@ class IndexTracker(object):
             im = self.X[:, :, self.ind]
             mask = self.Y[:, :, self.ind]
             masked = Image.new("RGBA", im.shape)
-            masked = Image.alpha_composite(masked, im)
-            masked = Image.alpha_composite(masked, mask)
+            masked = Image.alpha_composite(masked, Image.fromarray(im))
+            masked = Image.alpha_composite(masked, Image.fromarray(mask))
             self.im.set_data(masked)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
