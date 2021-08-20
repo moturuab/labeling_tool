@@ -180,10 +180,10 @@ class IndexTracker(object):
         #self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.9)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
-        self.im = Image.new('RGBA', self.shape)
-        self.im = Image.alpha_composite(self.im, Image.fromarray(im.astype('uint8'), 'RGBA'))
-        self.im = Image.alpha_composite(self.im, Image.fromarray(mask.astype('uint8'), 'RGBA'))
-        self.im = ax.imshow(self.im)
+        masked = Image.new('RGBA', self.shape)
+        masked = Image.alpha_composite(masked, Image.fromarray(im.astype('uint8'), 'RGBA'))
+        masked = Image.alpha_composite(masked, Image.fromarray(mask.astype('uint8'), 'RGBA'))
+        self.im = ax.imshow(masked)
 
         self.update()
 
