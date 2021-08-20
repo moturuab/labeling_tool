@@ -286,12 +286,15 @@ class IndexTracker(object):
 
 if len(sys.argv) < 3:
     X = read_png_volume("volumes/volume_{}".format(volume_number)) #/ 255.0
-    print(np.max(X))
+    X = (X - X.min()) / (X.max() - X.min())
+    print(X.min())
+    print(X.max())
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
         Y = read_png_volume2("masks/volume_{}".format(volume_number))
-        #Y = Y/np.max(Y)
-        print(np.max(Y))
+        Y = (Y - Y.min()) / (Y.max() - Y.min())
+        print(Y.min())
+        print(Y.max())
         Y = np.moveaxis(Y, 0, 2)
     else:
         Y = np.zeros_like(X)
