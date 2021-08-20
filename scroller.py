@@ -171,7 +171,7 @@ class IndexTracker(object):
         self.mask = self.Y[:, :, self.ind]
         masked = np.ma.masked_where(self.mask == 0, self.mask)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        #self.im = ax.imshow(masked, cmap='jet', alpha=0.5, vmin=0, vmax=1)
+        self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.5)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
         self.update()
@@ -286,14 +286,9 @@ class IndexTracker(object):
 
 if len(sys.argv) < 3:
     X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
-    print(X.min())
-    print(X.max())
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
-        Y = read_png_volume2("masks/volume_{}".format(volume_number))
-        Y = 255*(Y - Y.min()) / (Y.max() - Y.min())
-        print(Y.min())
-        print(Y.max())
+        Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 50.0
         Y = np.moveaxis(Y, 0, 2)
     else:
         Y = np.zeros_like(X)
@@ -301,7 +296,7 @@ else:
     X = read_png_volume("nodule_im/volume_{}".format(volume_number)) / 255.0
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
-        Y = read_png_volume2("nodule_im_masks/volume_{}".format(volume_number)) #/ 255.0
+        Y = read_png_volume2("nodule_im_masks/volume_{}".format(volume_number)) / 50.0
         Y = np.moveaxis(Y, 0, 2)
     else:
         Y = np.zeros_like(X)
@@ -314,13 +309,19 @@ else:
 
 
 # X = np.random.randn(1024, 256, 64)
-#X = np.random.randn(1024, 256, 64)
-#Y = np.zeros((1024, 256, 64))
-#Y[30:-30, 30:-30, :] = 0
-#Y[40:-40, 40:-40, :] = 0.25
-#Y[50:-50, 50:-50, :] = 0.5
-#Y[60:-60, 60:-60, :] = 0.75
-#Y[70:-70, 70:-70, :] = 1
+'''
+X = np.random.rand(1024, 256, 64)
+Y = np.zeros((1024, 256, 64))
+print(X.min())
+print(X.max())
+Y[30:-30, 30:-30, :] = 0
+Y[40:-40, 40:-40, :] = 0.25
+Y[50:-50, 50:-50, :] = 0.5
+Y[60:-60, 60:-60, :] = 0.75
+Y[70:-70, 70:-70, :] = 1
+print(Y.min())
+print(Y.max())
+'''
 
 label = Labels(volume_number)
 tracker = IndexTracker(label, ax, X, Y, volume_number)
