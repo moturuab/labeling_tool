@@ -291,7 +291,7 @@ if len(sys.argv) < 3:
     print(X.min())
     print(X.max())
     if int(volume_number) <= 25:
-        Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 50.0
+        Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 255.0
         Y = np.moveaxis(Y, 0, 2)
         print(Y.shape)
         print(Y.min())
@@ -302,7 +302,7 @@ else:
     X = read_png_volume("nodule_im/volume_{}".format(volume_number)) / 255.0
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
-        Y = read_png_volume2("nodule_im_masks/volume_{}".format(volume_number)) / 50.0
+        Y = read_png_volume2("nodule_im_masks/volume_{}".format(volume_number)) / 255.0
         Y = np.moveaxis(Y, 0, 2)
     else:
         Y = np.zeros_like(X)
