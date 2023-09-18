@@ -65,24 +65,37 @@ ax3 = plt.subplot2grid((1,4), (0,2),)
 
 
 
-raw = np.load(volume_path)
+#raw = np.load(volume_path)
+
+raw = []
+for i in range(10):
+    raw.append(np.random.rand(100,100))
+raw = np.array(raw)
 
 
 preproc = []
+for i in range(10):
+    preproc.append(np.random.rand(100,100))
+'''
 for i in range(len(os.listdir(preproc_path))):
     filename = "{}.png".format(i)
     if not os.path.isdir(os.path.join(preproc_path, filename)):
         im = np.array(Image.open(os.path.join(preproc_path, filename)))
         preproc.append(im.tolist())
+'''
 preproc = np.array(preproc)
 
 pred = []
+for i in range(10):
+    pred.append(np.random.rand(100,100))
+'''
 for i in range(len(os.listdir(pred_path))):
     filename = "{}.png".format(i)
     print(filename)
     if not os.path.isdir(os.path.join(pred_path, filename)):
         im = np.array(Image.open(os.path.join(pred_path, filename)))
         pred.append(im.tolist())
+'''
 pred = np.array(pred)
 
 tracker = IndexTracker(ax1, raw, volume_path)

@@ -19,31 +19,31 @@ import os
 import glob
 from matplotlib.widgets import TextBox, Button, RadioButtons
 from matplotlib.patches import Circle
+
+import matplotlib.widgets as mpwidgets
 import time
 from datetime import datetime
 
 def read_png_volume(dir, transform=None):
-
-    vol = []
     for i in range(len(os.listdir(dir))):
         a = io.imread(os.path.join(dir, "{}.png".format(i)), as_gray=True)[np.newaxis, ...]
         vol.append(a)
-
     return np.concatenate(vol, 0)
 
 def read_png_volume2(dir, transform=None):
-
-    vol = []
     for i in range(len(os.listdir(dir))):
         a = io.imread(os.path.join(dir, "slice_{}.png".format(i)), as_gray=True)[np.newaxis, ...]
-
         # a = a[:a.shape[1]]
         # if transform:
         #   a = transform(a)
         vol.append(a)
-
     return np.concatenate(vol, 0)
 
+def update(value):
+    tracker.im.set_alpha(value)
+    fig.canvas.draw_idle()
+
+OPACITY = 0.5
 
 start = time.time()
 end = 0
@@ -55,11 +55,14 @@ UNDO = False
 DONE = False
 FINISH = False
 
-fig = plt.figure(figsize=(11, 10))
+fig = plt.figure(figsize=(9, 10))
 ax = plt.subplot2grid((1,3), (0, 1),)
-#ay = plt.subplot2grid((1,4), (0, 2),)
 
-plt.subplots_adjust(top=0.95)
+ay = plt.subplot2grid((14,11), (0, 8), colspan=2)
+slider0 = mpwidgets.Slider(ax=ay, label='opacity', valmin=0, valmax=1, valinit=OPACITY)
+slider0.on_changed(update)
+
+plt.subplots_adjust(top=0.9)
 fig.tight_layout()
 
 coords = plt.axes([0.034, 0.25, 0.15, 0.65])
@@ -93,7 +96,8 @@ class Labels():
         case.set_visible(False)
         done.set_visible(False)
         ax.set_visible(False)
-        #ay.set_visible(False)
+        slider0.set_active(False)
+        ay.set_visible(False)
 
         finish.set_visible(True)
 
@@ -149,9 +153,9 @@ class Labels():
         UNDO = True
         fig.canvas.draw_idle()
 
-
 # handle scrolling through volume
 class IndexTracker(object):
+
     def __init__(self, label, ax, X, Y, n):
         self.ax = ax
         fig.suptitle('scrolling through VOLUME {}\n'.format(n))
@@ -171,7 +175,8 @@ class IndexTracker(object):
         self.mask = self.Y[:, :, self.ind]
         masked = np.ma.masked_where(self.mask == 0, self.mask)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        self.im = ax.imshow(masked, 'jet', interpolation='none', alpha=0.5)
+        self.im = ax.imshow(masked, cmap='gray', interpolation='none', alpha=0.5)
+
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
         self.update()
@@ -281,14 +286,13 @@ class IndexTracker(object):
             self.onclick(event)
         self.press=False; self.move=False
 
-
 #X = np.load('/home/abhishekmoturu/Desktop/gan_cancer_detection/brain_mri_512/volume_{}.npy'.format(volume_number)).astype(np.float32)
 
 if len(sys.argv) < 3:
     X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
-        Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 50.0
+        Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 255.0
         Y = np.moveaxis(Y, 0, 2)
     else:
         Y = np.zeros_like(X)
