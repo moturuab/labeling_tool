@@ -25,12 +25,14 @@ import time
 from datetime import datetime
 
 def read_png_volume(dir, transform=None):
+    vol = []
     for i in range(len(os.listdir(dir))):
         a = io.imread(os.path.join(dir, "{}.png".format(i)), as_gray=True)[np.newaxis, ...]
         vol.append(a)
     return np.concatenate(vol, 0)
 
 def read_png_volume2(dir, transform=None):
+    vol = []
     for i in range(len(os.listdir(dir))):
         a = io.imread(os.path.join(dir, "slice_{}.png".format(i)), as_gray=True)[np.newaxis, ...]
         # a = a[:a.shape[1]]
