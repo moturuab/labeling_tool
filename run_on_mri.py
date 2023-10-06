@@ -32,15 +32,15 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = UNet2D(1).to(device)
 model.load_state_dict(torch.load('/home/abhishekmoturu/Documents/wbmri_cancer_project/31.pt', map_location=device))
 model.eval()
-inferer = monai.inferers.SlidingWindowInferer(roi_size=(128, 128), mode=BlendMode.GAUSSIAN, overlap=0.5)
+inferer = monai.inferers.SlidingWindowInferer(roi_size=(128, 128), mode=BlendMode.GAUSSIAN, overlap=0.75)
 
 with torch.no_grad():
-    os.mkdir('/home/abhishekmoturu/Documents/labeling_tool/masks_final')
+    os.mkdir('/home/abhishekmoturu/Documents/labeling_tool/masks_final_75')
     for i in tqdm(range(1, 51)):
-        os.mkdir('/home/abhishekmoturu/Documents/labeling_tool/masks_final/volume_' + str(i))
+        os.mkdir('/home/abhishekmoturu/Documents/labeling_tool/masks_final_75/volume_' + str(i))
         for j in range(len(os.listdir('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i)))):
             image = torch.unsqueeze(torch.unsqueeze(torch.from_numpy(cv2.imread('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i) + '/' + str(j) + '.png')[:,:,0]), 0), 0)/255.0
             image = (image - 0.3)/0.27
             pred = inferer(inputs=image.to(device), network=model)
             im = Image.fromarray(255*np.array(torch.softmax(pred, dim=1).argmax(dim=1).cpu().detach()[0]).astype('uint8'))
-            im.save('/home/abhishekmoturu/Documents/labeling_tool/masks_final/volume_' + str(i) + '/' + str(j) + '.png')
+            im.save('/home/abhishekmoturu/Documents/labeling_tool/masks_final_75/volume_' + str(i) + '/' + str(j) + '.png')
