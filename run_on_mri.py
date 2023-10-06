@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(description='wbMRI cancer detection')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = UNet2D(1).to(device)
-model.load_state_dict(torch.load('/home/abhishekmoturu/Documents/wbmri_cancer_project/models/hardy-snow-770/31.pt', map_location=device))
+model.load_state_dict(torch.load('/home/abhishekmoturu/Documents/wbmri_cancer_project/31.pt', map_location=device))
 model.eval()
 inferer = monai.inferers.SlidingWindowInferer(roi_size=(128, 128), mode=BlendMode.GAUSSIAN, overlap=0.5)
 
