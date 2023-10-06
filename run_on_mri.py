@@ -40,6 +40,7 @@ with torch.no_grad():
         os.mkdir('/home/abhishekmoturu/Documents/labeling_tool/masks_final/volume_' + str(i))
         for j in range(len(os.listdir('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i)))):
             image = torch.unsqueeze(torch.unsqueeze(torch.from_numpy(cv2.imread('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i) + '/' + str(j) + '.png')[:,:,0]), 0), 0)/255.0
+            image = (image - 0.3)/0.27)
             plt.imshow(image[0][0])
             plt.show()
             pred = inferer(inputs=image.to(device), network=model)
