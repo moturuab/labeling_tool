@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 import random
 from sklearn import metrics
 import imageio
-from prettytable import PrettyTable
 import sys
 import time
 from datetime import datetime
 import monai
 from PIL import Image
+from tqdm import tqdm
 
 import wandb
 from monai.utils import PytorchPadMode, BlendMode
@@ -34,7 +34,7 @@ model.load_state_dict(torch.load('/home/abhishekmoturu/Documents/wbmri_cancer_pr
 model.eval()
 inferer = monai.inferers.SlidingWindowInferer(roi_size=(128, 128), mode=BlendMode.GAUSSIAN, overlap=0.5)
 
-for i in range(50):
+for i in tqdm(range(50)):
     os.mkdir('/home/abhishekmoturu/Documents/labeling_tool/masks/volume_' + str(i))
     for j in range(len(os.listdir('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i)))):
         image = torch.unsqueeze(torch.unsqueeze(torch.from_numpy(cv2.imread('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i) + '/' + str(j) + '.png')[:,:,0]), 0), 0)/255.0
