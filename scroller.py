@@ -41,11 +41,14 @@ def read_png_volume2(dir, transform=None):
         vol.append(a)
     return np.concatenate(vol, 0)
 
+global OPACITY
+OPACITY = 0.5
+
 def update(value):
+    global OPACITY
+    OPACITY = value
     tracker.im.set_alpha(value)
     fig.canvas.draw_idle()
-
-OPACITY = 0.5
 
 start = time.time()
 end = 0
@@ -60,9 +63,13 @@ FINISH = False
 fig = plt.figure(figsize=(9, 10))
 ax = plt.subplot2grid((1,3), (0, 1),)
 
-ay = plt.subplot2grid((14,11), (0, 8), colspan=2)
-slider0 = mpwidgets.Slider(ax=ay, label='opacity', valmin=0, valmax=1, valinit=OPACITY)
-slider0.on_changed(update)
+ay = plt.subplot2grid((14,11), (1, 9), colspan=2)
+
+if int(volume_number) <= 25:
+    slider0 = mpwidgets.Slider(ax=ay, label='opacity', valmin=0, valmax=1, valinit=OPACITY)
+    slider0.on_changed(update)
+else:
+    ay.set_visible(False)
 
 plt.subplots_adjust(top=0.9)
 fig.tight_layout()
@@ -88,6 +95,7 @@ class Labels():
     def __init__(self, volume_n):
         self.volume_n = volume_n
 
+
     def case(self, label):
         done.set_visible(True)
         fig.canvas.draw_idle()
@@ -98,7 +106,8 @@ class Labels():
         case.set_visible(False)
         done.set_visible(False)
         ax.set_visible(False)
-        slider0.set_active(False)
+        if int(volume_number) <= 25:
+            slider0.set_active(False)
         ay.set_visible(False)
 
         finish.set_visible(True)
@@ -162,7 +171,7 @@ class IndexTracker(object):
         self.ax = ax
         fig.suptitle('scrolling through VOLUME {}\n'.format(n))
 
-        #self.ay = ay
+        self.ay = ay
         self.label = label
 
         self.X = X
@@ -175,9 +184,10 @@ class IndexTracker(object):
         self.move = False
         self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
         self.mask = self.Y[:, :, self.ind]
-        masked = np.ma.masked_where(self.mask == 0, self.mask)
+        masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
+        masked = np.ma.masked_where(masked == 0, masked)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        self.im = ax.imshow(masked, cmap='gray', interpolation='none', alpha=0.5)
+        self.im = ax.imshow(masked, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
 
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
@@ -202,16 +212,22 @@ class IndexTracker(object):
 
     def update(self):
         if not DONE:
-            self.im.set_data(self.X[:, :, self.ind])
+            self.ax.cla()
+            self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+            #self.im.set_data(self.X[:, :, self.ind])
             self.mask = self.Y[:, :, self.ind]
-            masked = np.ma.masked_where(self.mask == 0, self.mask)
-            self.im.set_data(masked)
+            #s = 1*(np.min(self.Y[:,:,self.ind]) + np.max(self.Y[:,:,self.ind]))/2
+            masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
+            masked = np.ma.masked_where(masked == 0, masked)
+            #self.im.set_data(masked)
+            self.im = ax.imshow(masked, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
             for (point, circ) in zip(self.points, self.circles):
                 if self.ind != point[2]:
                     circ.set_visible(False)
                 else:
+                    self.ax.add_patch(circ)
                     circ.set_visible(True)
             ax.set_ylabel('slice %s' % self.ind)
             self.im.axes.figure.canvas.draw()
@@ -259,7 +275,7 @@ class IndexTracker(object):
             self.point = (click.xdata, click.ydata)
             if self.point != (None, None) and int(self.point[0]) > 1 and int(self.point[1]) > 1:
                 self.points.append([self.point[0], self.point[1], self.ind])
-                circ = Circle((int(self.point[0]), int(self.point[1]), self.ind), 25, fill=False, edgecolor='red', lw=2)
+                circ = Circle((int(self.point[0]), int(self.point[1]), self.ind), 25, fill=False, edgecolor='chartreuse', lw=2)
                 self.circles.append(circ)
                 self.ax.add_patch(circ)
                 s = 'Points selected:\n'
@@ -294,7 +310,7 @@ if len(sys.argv) < 3:
     X = read_png_volume("volumes/volume_{}".format(volume_number)) / 255.0
     X = np.moveaxis(X, 0, 2)
     if int(volume_number) <= 25:
-        Y = read_png_volume2("masks/volume_{}".format(volume_number)) / 255.0
+        Y = read_png_volume("masks_final/volume_{}".format(volume_number)) / 50.0
         Y = np.moveaxis(Y, 0, 2)
     else:
         Y = np.zeros_like(X)
