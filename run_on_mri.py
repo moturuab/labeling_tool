@@ -43,7 +43,7 @@ with torch.no_grad():
             plt.imshow(image[0][0])
             plt.show()
             pred = inferer(inputs=image.to(device), network=model)
-            im = Image.fromarray(np.array(torch.softmax(pred, dim=1).argmax(dim=1).cpu().detach()[0]).astype('uint8'))
+            im = Image.fromarray(255.0*np.array(torch.softmax(pred, dim=1).argmax(dim=1).cpu().detach()[0]).astype('uint8'))
             plt.imshow(im)
             plt.show()
             print(np.max(im))
