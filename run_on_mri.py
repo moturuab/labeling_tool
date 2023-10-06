@@ -40,4 +40,4 @@ for i in range(50):
         image = torch.unsqueeze(torch.unsqueeze(torch.from_numpy(cv2.imread('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i) + '/' + str(j) + '.png')[:,:,0]), 0), 0)/255.0
         pred = inferer(inputs=image.to(device), network=model)
         im = Image.fromarray(np.array(torch.softmax(pred, dim=1).argmax(dim=1).cpu().detach()[0]).astype('uint8'))
-        im.save('/home/abhishekmoturu/Documents/labeling_tool/masks/volume_' + str(i) + '/' + str(j) + '.png')
+        im.save('/home/abhishekmoturu/Documents/labeling_tool/masks_final/volume_' + str(i) + '/' + str(j) + '.png')
