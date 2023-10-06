@@ -39,11 +39,11 @@ with torch.no_grad():
     for i in tqdm(range(1, 51)):
         os.mkdir('/home/abhishekmoturu/Documents/labeling_tool/masks_final/volume_' + str(i))
         for j in range(len(os.listdir('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i)))):
-            image = torch.unsqueeze(torch.unsqueeze(torch.from_numpy(cv2.imread('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i) + '/' + str(j) + '.png')[:,:,0]), 0), 0)*1.0
+            image = torch.unsqueeze(torch.unsqueeze(torch.from_numpy(cv2.imread('/home/abhishekmoturu/Documents/labeling_tool/volumes/volume_' + str(i) + '/' + str(j) + '.png')[:,:,0]), 0), 0)/255.0
             plt.imshow(image[0][0])
             plt.show()
             pred = inferer(inputs=image.to(device), network=model)
-            im = Image.fromarray(np.array(255*torch.softmax(pred, dim=1).argmax(dim=1).cpu().detach()[0]).astype('uint8'))
+            im = Image.fromarray(255*np.array(torch.softmax(pred, dim=1).argmax(dim=1).cpu().detach()[0]).astype('uint8'))
             plt.imshow(im)
             plt.show()
             print(np.max(im))
