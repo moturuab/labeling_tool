@@ -44,10 +44,19 @@ def read_png_volume2(dir, transform=None):
 global OPACITY
 OPACITY = 0.5
 
-def update(value):
+global CONTRAST
+CONTRAST = 1
+
+def update_opacity(value):
     global OPACITY
     OPACITY = value
     tracker.mask.set_alpha(value)
+    fig.canvas.draw_idle()
+
+def update_contrast(value):
+    global CONTRAST
+    CONTRAST = value
+    tracker.im.set_clim(vmax=CONTRAST)
     fig.canvas.draw_idle()
 
 start = time.time()
@@ -65,11 +74,16 @@ ax = plt.subplot2grid((1,3), (0, 1),)
 
 ay = plt.subplot2grid((14,11), (1, 9), colspan=2)
 
+az = plt.subplot2grid((14,11), (3, 9), colspan=2)
+
 if int(volume_number) <= 25:
     slider0 = mpwidgets.Slider(ax=ay, label='opacity', valmin=0, valmax=1, valinit=OPACITY)
-    slider0.on_changed(update)
+    slider0.on_changed(update_opacity)
 else:
     ay.set_visible(False)
+
+slider1 = mpwidgets.Slider(ax=ay, label='contrast', valmin=0, valmax=1, valinit=CONTRAST)
+slider1.on_changed(update_contrast)
 
 plt.subplots_adjust(top=0.9)
 fig.tight_layout()
@@ -94,7 +108,6 @@ finish.set_visible(False)
 class Labels():
     def __init__(self, volume_n):
         self.volume_n = volume_n
-
 
     def case(self, label):
         done.set_visible(True)
@@ -190,7 +203,7 @@ class IndexTracker(object):
             masked = np.ma.where(mask > 3 * np.mean(mask), 1, 0)
             masked = np.ma.masked_where(masked == 0, masked)
             self.masks.append(masked)
-        self.im = ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
+        self.im = ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=CONTRAST)
         #self.mask =
         #self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
         #self.mask = self.Y[:, :, self.ind]
