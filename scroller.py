@@ -122,6 +122,7 @@ class Labels():
         if int(volume_number) <= 25:
             slider0.set_active(False)
         ay.set_visible(False)
+        az.set_visible(False)
 
         finish.set_visible(True)
 
