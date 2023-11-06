@@ -184,6 +184,7 @@ class IndexTracker(object):
         self.move = False
         self.ims = []
         self.masks = []
+        ax.autoscale(False)
         for i in range(self.slices):
             self.ims.append(self.X[:, :, i])
             mask = self.Y[:, :, i]
@@ -198,7 +199,7 @@ class IndexTracker(object):
         #masked = np.ma.masked_where(masked == 0, masked)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
         self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
-        self.ax.autoscale(False)
+        ax.autoscale(False)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
         self.update()
@@ -222,6 +223,7 @@ class IndexTracker(object):
 
     def update(self):
         if not DONE:
+            ax.autoscale(False)
             self.ax.cla()
             ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
             #self.im.set_data(self.X[:, :, self.ind])
