@@ -198,7 +198,7 @@ class IndexTracker(object):
         #masked = np.ma.masked_where(masked == 0, masked)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
         self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
-        ax.autoscale(False)
+
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
         self.update()
@@ -222,10 +222,10 @@ class IndexTracker(object):
 
     def update(self):
         if not DONE:
-            #self.ax.cla()
-            #ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
-            self.im.set_data(self.X[:, :, self.ind])
-            self.im.set_cmap('gray')
+            self.ax.cla()
+            ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
+            #self.im.set_data(self.X[:, :, self.ind])
+            #self.im.set_cmap('gray')
             #self.im.set_clim(vmin=0)
             #self.im.set_clim(vmax=np.max(self.X[:,:,self.ind]))
             #self.mask = self.masks[self.ind] #self.Y[:, :, self.ind]
@@ -233,7 +233,7 @@ class IndexTracker(object):
             #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
             #masked = np.ma.masked_where(masked == 0, masked)
             #self.im.set_data(masked)
-            #self.im = ax.imshow(self.masks[self.ind], cmap='bwr', alpha=OPACITY)
+            self.im = ax.imshow(self.masks[self.ind], cmap='bwr', alpha=OPACITY)
             #self.im.set_data(self.masks[self.ind])
             #self.im.set_cmap('bwr')
             #self.im.set_alpha(OPACITY)
@@ -249,6 +249,7 @@ class IndexTracker(object):
                     circ.set_visible(True)
             ax.set_ylabel('slice %s' % self.ind)
             self.im.axes.figure.canvas.draw()
+            self.ax.autoscale(False)
             #self.mask.axes.figure.canvas.draw()
 
     def onclick(self, click):
