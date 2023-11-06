@@ -47,7 +47,7 @@ OPACITY = 0.5
 def update(value):
     global OPACITY
     OPACITY = value
-    tracker.im.set_alpha(value)
+    tracker.mask.set_alpha(value)
     fig.canvas.draw_idle()
 
 start = time.time()
