@@ -232,7 +232,7 @@ class IndexTracker(object):
             #masked = np.ma.masked_where(masked == 0, masked)
             #self.im.set_data(masked)
             #self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
-            self.im.set_data(self.X[:, :, self.ind])
+            self.im.set_data(self.masks[self.ind])
             self.im.set_cmap('bwr')
             #self.mask.set_data(self.Y[:, :, self.ind])
 
