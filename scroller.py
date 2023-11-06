@@ -191,7 +191,7 @@ class IndexTracker(object):
             masked = np.ma.masked_where(masked == 0, masked)
             self.masks.append(masked)
         self.im = self.ims[self.ind]
-        self.masks = self.masks[self.ind]
+        self.mask = self.masks[self.ind]
         #self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
         #self.mask = self.Y[:, :, self.ind]
         #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
