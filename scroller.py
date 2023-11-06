@@ -198,7 +198,7 @@ class IndexTracker(object):
         #masked = np.ma.masked_where(masked == 0, masked)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
         self.im = ax.imshow(self.mask, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
-        self.ax.autoscale(False)
+        #self.ax.autoscale(False)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
         self.update()
@@ -225,12 +225,12 @@ class IndexTracker(object):
             #self.ax.cla()
             ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
             #self.im.set_data(self.X[:, :, self.ind])
-            self.mask = self.masks[self.ind] #self.Y[:, :, self.ind]
+            #self.mask = self.masks[self.ind] #self.Y[:, :, self.ind]
             #s = 1*(np.min(self.Y[:,:,self.ind]) + np.max(self.Y[:,:,self.ind]))/2
             #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
             #masked = np.ma.masked_where(masked == 0, masked)
             #self.im.set_data(masked)
-            self.im = ax.imshow(self.mask, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
+            self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
             for (point, circ) in zip(self.points, self.circles):
