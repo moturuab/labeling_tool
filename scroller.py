@@ -182,10 +182,20 @@ class IndexTracker(object):
         self.circles = []
         self.press = False
         self.move = False
-        self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
-        self.mask = self.Y[:, :, self.ind]
-        masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
-        masked = np.ma.masked_where(masked == 0, masked)
+        self.ims = []
+        self.masks = []
+        for i in range(self.slices):
+            self.ims.append(self.X[:, :, i])
+            mask = self.Y[:, :, i]
+            masked = np.ma.where(mask > 3 * np.mean(mask), 1, 0)
+            masked = np.ma.masked_where(masked == 0, masked)
+            self.masks.append(masked)
+        self.im = self.ims[self.ind]
+        self.masks = self.masks[self.ind]
+        #self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+        #self.mask = self.Y[:, :, self.ind]
+        #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
+        #masked = np.ma.masked_where(masked == 0, masked)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
         self.im = ax.imshow(masked, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
         self.ax.autoscale(False)
@@ -213,14 +223,14 @@ class IndexTracker(object):
     def update(self):
         if not DONE:
             #self.ax.cla()
-            self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+            self.im = self.ims[self.ind] #ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
             #self.im.set_data(self.X[:, :, self.ind])
-            self.mask = self.Y[:, :, self.ind]
+            self.mask = self.masks[self.ind] #self.Y[:, :, self.ind]
             #s = 1*(np.min(self.Y[:,:,self.ind]) + np.max(self.Y[:,:,self.ind]))/2
-            masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
-            masked = np.ma.masked_where(masked == 0, masked)
+            #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
+            #masked = np.ma.masked_where(masked == 0, masked)
             #self.im.set_data(masked)
-            self.im = ax.imshow(masked, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
+            self.im = ax.imshow(self.mask, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
             for (point, circ) in zip(self.points, self.circles):
