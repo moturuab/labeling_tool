@@ -190,7 +190,7 @@ class IndexTracker(object):
             masked = np.ma.where(mask > 3 * np.mean(mask), 1, 0)
             masked = np.ma.masked_where(masked == 0, masked)
             self.masks.append(masked)
-        self.im = self.ims[self.ind]
+        ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
         self.mask = self.masks[self.ind]
         #self.im = ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
         #self.mask = self.Y[:, :, self.ind]
@@ -223,7 +223,7 @@ class IndexTracker(object):
     def update(self):
         if not DONE:
             #self.ax.cla()
-            self.im = self.ims[self.ind] #ax.imshow(self.X[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
+            ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
             #self.im.set_data(self.X[:, :, self.ind])
             self.mask = self.masks[self.ind] #self.Y[:, :, self.ind]
             #s = 1*(np.min(self.Y[:,:,self.ind]) + np.max(self.Y[:,:,self.ind]))/2
