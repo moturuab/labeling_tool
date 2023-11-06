@@ -23,6 +23,7 @@ from matplotlib.patches import Circle
 import matplotlib.widgets as mpwidgets
 import time
 from datetime import datetime
+from matplotlib import cm
 
 def read_png_volume(dir, transform=None):
     vol = []
@@ -223,14 +224,18 @@ class IndexTracker(object):
     def update(self):
         if not DONE:
             #self.ax.cla()
-            ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
+            self.im.set_data(self.ims[self.ind])
+            #ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
             #self.im.set_data(self.X[:, :, self.ind])
             #self.mask = self.masks[self.ind] #self.Y[:, :, self.ind]
             #s = 1*(np.min(self.Y[:,:,self.ind]) + np.max(self.Y[:,:,self.ind]))/2
             #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
             #masked = np.ma.masked_where(masked == 0, masked)
             #self.im.set_data(masked)
-            self.im.set_data(self.masks[self.ind]) #, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
+            self.im.set_data(self.masks[self.ind])
+            c = cm.get_cmap('bwr', 12)
+            self.im.set_cmap()
+            self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
             for (point, circ) in zip(self.points, self.circles):
