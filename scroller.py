@@ -231,7 +231,9 @@ class IndexTracker(object):
             #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
             #masked = np.ma.masked_where(masked == 0, masked)
             #self.im.set_data(masked)
-            self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
+            #self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
+            self.im.set_data(self.X[:, :, self.ind])
+            self.im.set_cmap('bwr')
             #self.mask.set_data(self.Y[:, :, self.ind])
 
             for (point, circ) in zip(self.points, self.circles):
