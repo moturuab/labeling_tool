@@ -222,6 +222,7 @@ class IndexTracker(object):
 
     def update(self):
         if not DONE:
+            self.ax.autoscale(enable=False)
             self.ax.cla()
             ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
             #self.im.set_data(self.X[:, :, self.ind])
