@@ -225,6 +225,8 @@ class IndexTracker(object):
         if not DONE:
             #self.ax.cla()
             self.im.set_data(self.ims[self.ind])
+            g = cm.get_cmap('gray', 12)
+            self.im.set_cmap(g)
             #ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
             #self.im.set_data(self.X[:, :, self.ind])
             #self.mask = self.masks[self.ind] #self.Y[:, :, self.ind]
@@ -235,7 +237,7 @@ class IndexTracker(object):
             self.im.set_data(self.masks[self.ind])
             c = cm.get_cmap('bwr', 12)
             self.im.set_cmap(c)
-            self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
+            #self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
             for (point, circ) in zip(self.points, self.circles):
