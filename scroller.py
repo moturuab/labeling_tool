@@ -234,7 +234,7 @@ class IndexTracker(object):
             #self.im.set_data(masked)
             self.im.set_data(self.masks[self.ind])
             c = cm.get_cmap('bwr', 12)
-            self.im.set_cmap()
+            self.im.set_cmap(c)
             self.im = ax.imshow(self.masks[self.ind], cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
             #self.mask.set_data(self.Y[:, :, self.ind])
 
