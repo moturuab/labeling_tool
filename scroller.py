@@ -223,11 +223,11 @@ class IndexTracker(object):
     def update(self):
         if not DONE:
             #self.ax.cla()
-            #ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
-            self.im.set_data(self.X[:, :, self.ind])
-            self.im.set_cmap('gray')
-            self.im.set_clim(vmin=0)
-            self.im.set_clim(vmax=np.max(self.X[:,:,self.ind]))
+            ax.imshow(self.ims[self.ind], cmap='gray', vmin=0, vmax=1)
+            #self.im.set_data(self.X[:, :, self.ind])
+            #self.im.set_cmap('gray')
+            #self.im.set_clim(vmin=0)
+            #self.im.set_clim(vmax=np.max(self.X[:,:,self.ind]))
             #self.mask = self.masks[self.ind] #self.Y[:, :, self.ind]
             #s = 1*(np.min(self.Y[:,:,self.ind]) + np.max(self.Y[:,:,self.ind]))/2
             #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
