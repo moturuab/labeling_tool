@@ -197,7 +197,7 @@ class IndexTracker(object):
         #masked = np.ma.where(self.mask > 3*np.mean(self.mask), 1, 0)
         #masked = np.ma.masked_where(masked == 0, masked)
         # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        self.im = ax.imshow(masked, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
+        self.im = ax.imshow(self.mask, cmap='bwr', interpolation='none', alpha=OPACITY, vmin=0, vmax=1)
         self.ax.autoscale(False)
         #self.mask = ay.imshow(self.Y[:, :, self.ind], cmap='gray', vmin=0, vmax=1)
 
