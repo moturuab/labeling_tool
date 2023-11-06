@@ -82,7 +82,7 @@ if int(volume_number) <= 25:
 else:
     ay.set_visible(False)
 
-slider1 = mpwidgets.Slider(ax=az, label='contrast', valmin=0, valmax=1, valinit=CONTRAST)
+slider1 = mpwidgets.Slider(ax=az, label='contrast', valmin=0, valmax=2, valinit=CONTRAST)
 slider1.on_changed(update_contrast)
 
 plt.subplots_adjust(top=0.9)
